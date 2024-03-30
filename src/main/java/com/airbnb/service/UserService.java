@@ -15,8 +15,11 @@ public class UserService {
 
 
     private PropertyUserRepository propertyUserRepository;
-    public UserService(PropertyUserRepository propertyUserRepository) {
+    private JWTService jwtService;
+
+    public UserService(PropertyUserRepository propertyUserRepository, JWTService jwtService) {
         this.propertyUserRepository = propertyUserRepository;
+        this.jwtService = jwtService;
     }
 
     public PropertyUser addUser(PropertyUserDto dto) {
@@ -31,14 +34,16 @@ public class UserService {
         return user;
     }
 
-    public boolean verifylogin(LoginDto loginDto) {
+    public String verifylogin(LoginDto loginDto) {
         Optional<PropertyUser> user = propertyUserRepository.findByUsername(loginDto.getUsername());
         if (user.isPresent()) {
             PropertyUser user1 = user.get();
-             return BCrypt.checkpw(loginDto.getPassword(), user1.getPassword());
+             if( BCrypt.checkpw(loginDto.getPassword(), user1.getPassword())) {
+                 return jwtService.generateToken(user1);
+             }
 
         }
-        return false;
+        return null;
 
 
     }
