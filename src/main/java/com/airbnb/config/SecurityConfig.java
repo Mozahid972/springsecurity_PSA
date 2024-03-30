@@ -11,8 +11,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().disable();
-        http.authorizeHttpRequests().anyRequest().permitAll();
-        return http.build();
+        http.authorizeHttpRequests().
+                requestMatchers("/api/v1/users/adduser", "/api/v1/users/login").permitAll()
+                .requestMatchers("/api/v1/country/addCountry").authenticated().anyRequest().authenticated();
+                 return http.build();
     }
 
 }
